@@ -13,8 +13,9 @@ using Tanks.Model;
 namespace Tanks
 {
     public class Game1 : Game
-    {      
-       
+    {
+        bool isUpdate = true;
+        Thread ThrUp;
         Texture2D PlayerPrefab;
         long myIp;        
        Server server = new Server();
@@ -25,7 +26,9 @@ namespace Tanks
         private async void UpDateList()
         {
            await Task.Run(() =>
-            {               
+            {
+                while (isUpdate)
+                {
                     try
                     {
                         var temp = server.GetList();
@@ -47,8 +50,8 @@ namespace Tanks
                         }
                         GC.Collect(GC.GetGeneration(temp));
                     }
-                    catch (Exception) {  }
-                
+                    catch (Exception) { isUpdate = false; }
+                }
             });
         }
         public Game1()
@@ -68,43 +71,33 @@ namespace Tanks
             server.Reg(myIp, 0, 0);           
             PlayerPrefab = Content.Load<Texture2D>("tank");
            tanks= server.GetList();
+             new Thread(new ThreadStart(UpDateList)).Start();
         }
-        protected override void UnloadContent()
-        {           
-            server.Remuve(myIp);
-        
-        }
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+        protected override void UnloadContent() { server.Remuve(myIp); isUpdate = false; }
 
-            
-        }
+
+        protected override void LoadContent() => _spriteBatch = new SpriteBatch(GraphicsDevice);
+
 
         protected override void Update(GameTime gameTime)
         {
+           // UpDateList();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             #region кнопки перемещения
             // перемещение  по карте
-
-
-
-
-
             //лево
             if (Keyboard.GetState().IsKeyDown(Keys.A))
-                 server.Go_L(myIp);
+                Task.Run(() => { server.Go_L(myIp); });
             //право
             if (Keyboard.GetState().IsKeyDown(Keys.D))
-                 server.Go_R(myIp); 
+               Task.Run(() =>{  server.Go_R(myIp); });            
             //верх
             if (Keyboard.GetState().IsKeyDown(Keys.W))
-                 server.Go_U(myIp); 
+                Task.Run(() =>{ server.Go_U(myIp); });        
             if (Keyboard.GetState().IsKeyDown(Keys.S))
-                 server.Go_D(myIp); 
-
-            UpDateList();
+               Task.Run(() =>{  server.Go_D(myIp); });
+           
             #endregion
 
             base.Update(gameTime);
