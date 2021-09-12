@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
-using Tanks.Model;
 
 namespace Tanks.Model
 {
-   
+
     public class Server : IService
     {
         BasicHttpBinding myBinding = new BasicHttpBinding();
@@ -54,47 +52,7 @@ namespace Tanks.Model
                 }
             }
         }
-
-        public void Go_DL(long ip)
-        {
-            using (var myChannelFactory = new ChannelFactory<IService>(myBinding, myEndpoint))
-            {
-                IService client = null;
-
-                try
-                {
-                    client = myChannelFactory.CreateChannel();
-                    client.Go_DL(ip );
-                    ((ICommunicationObject)client).Close();
-                    myChannelFactory.Close();
-                }
-                catch (Exception)
-                {
-                    (client as ICommunicationObject)?.Abort();
-                }
-            }
-        }
-
-        public void Go_DR(long ip)
-        {
-            using (var myChannelFactory = new ChannelFactory<IService>(myBinding, myEndpoint))
-            {
-                IService client = null;
-
-                try
-                {
-                    client = myChannelFactory.CreateChannel();
-                    client.Go_DR(ip );
-                    ((ICommunicationObject)client).Close();
-                    myChannelFactory.Close();
-                }
-                catch (Exception)
-                {
-                    (client as ICommunicationObject)?.Abort();
-                }
-            }
-        }
-
+          
         public void Go_L(long ip)
         {
             using (var myChannelFactory = new ChannelFactory<IService>(myBinding, myEndpoint))
@@ -154,47 +112,7 @@ namespace Tanks.Model
                 }
             }
         }
-
-        public void Go_UL(long ip)
-        {
-            using (var myChannelFactory = new ChannelFactory<IService>(myBinding, myEndpoint))
-            {
-                IService client = null;
-
-                try
-                {
-                    client = myChannelFactory.CreateChannel();
-                    client.Go_UL(ip );
-                    ((ICommunicationObject)client).Close();
-                    myChannelFactory.Close();
-                }
-                catch (Exception)
-                {
-                    (client as ICommunicationObject)?.Abort();
-                }
-            }
-        }
-
-        public void Go_UR(long ip)
-        {
-            using (var myChannelFactory = new ChannelFactory<IService>(myBinding, myEndpoint))
-            {
-                IService client = null;
-
-                try
-                {
-                    client = myChannelFactory.CreateChannel();
-                    client.Go_UR(ip );
-                    ((ICommunicationObject)client).Close();
-                    myChannelFactory.Close();
-                }
-                catch (Exception)
-                {
-                    (client as ICommunicationObject)?.Abort();
-                }
-            }
-        }
-
+     
         public void Reg(long ip, float x, float y)
         {
             
@@ -242,11 +160,6 @@ namespace Tanks.Model
     }
 }
 
-[CollectionDataContract]
-public class TankList
-{
-    [DataMember] public List<ServerTank> _tanks = new List<ServerTank>(); // коллекция клиентов
-}
 [ServiceContract]
 public interface IService
 {
@@ -255,18 +168,11 @@ public interface IService
     [OperationContract]
     [ServiceKnownType(typeof(ServerTank))]
     List<ServerTank> GetList();
+   
     [OperationContract]
-    void Go_UL(long ip);
+    void Go_U(long ip);   
     [OperationContract]
-    void Go_U(long ip);
-    [OperationContract]
-    void Go_UR(long ip);
-    [OperationContract]
-    void Go_D(long ip);
-    [OperationContract]
-    void Go_DL(long ip);
-    [OperationContract]
-    void Go_DR(long ip);
+    void Go_D(long ip);    
     [OperationContract]
     void Go_L(long ip);
     [OperationContract]
